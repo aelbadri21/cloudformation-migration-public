@@ -1,0 +1,313 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  AWS CloudFormation Template to create Amazon RDS Instance that is snapshotted on stack deletion.  See the output for the post-template task(s).  
+#----------
+Metadata:
+    AWS::CloudFormation::Interface:
+        ParameterGroups:
+          - Label:
+                default: Parameters for RDS Instance
+            Parameters:
+              - pAWSUser
+              - pAllocatedStorage
+              - pCharacterSetName
+              - pDBInstanceClass
+              - pDBInstanceIdentifier
+              - pDBName
+              - pDBParameterGroupName
+              - pDBSubnetGroupName
+              - pDeletionProtection
+              - pEnableCloudwatchLogsExports
+              - pEnablePerformanceInsights
+              - pEngine
+              - pEngineVersion
+              - pIops
+              - pKmsKeyId
+              - pLicenseModel
+              - pMasterUsername
+              - pMasterUserPassword
+              - pMonitoringInterval
+              - pMonitoringRoleArn
+              - pMultiAZ
+              - pOptionGroupName
+              - pPerformanceInsightsKMSKeyId
+              - pPerformanceInsightsRetentionPeriod
+              - pPort
+              - pPubliclyAccessible
+              - pStorageEncrypted
+              - pVPCSecurityGroups
+              - pTagsKey
+              - pTagsValue
+              - pDeletionPolicy
+
+        ParameterLabels:
+            pAWSUser:
+                default: Enter the AWS User
+            pAllocatedStorage:
+                default: Allocated Storage (Gb)
+            pCharacterSetName:
+                default: Character Set Name        
+            pDBInstanceClass:
+               default:  Instance Class                 
+            pDBInstanceIdentifier:
+               default:  DB Instance Identifier
+            pDBName:
+               default:  DB Name
+            pDBParameterGroupName:
+               default:  Parameter Group Name             
+            pDBSubnetGroupName:
+               default:  Subnet Group Name
+            pDeletionProtection:
+               default:  Deletion Protection
+            pEnableCloudwatchLogsExports:
+               default:  Enable Cloudwatch Logs Exports
+            pEnablePerformanceInsights:
+               default:  Enable Performance Insights
+            pEngine:
+               default:  DB Engine
+            pEngineVersion:
+               default:  DB Engine Version
+            pIops:
+               default:  Iops
+            pKmsKeyId:
+               default:  Kms Key Id
+            pLicenseModel:
+               default:  License Model
+            pMasterUsername:
+               default:  Master User Name
+            pMasterUserPassword:
+               default:  Master User Password
+            pMonitoringInterval:
+               default:  Monitoring Interval
+            pMonitoringRoleArn:
+               default:  Monitoring Role Arn
+            pMultiAZ:
+               default:  Multi AZ
+            pOptionGroupName:
+               default:  Option Group Name
+            pPerformanceInsightsKMSKeyId:
+               default:  Performance Insights KMS Key Id
+            pPerformanceInsightsRetentionPeriod:
+               default:  Performance Insights Retention Period
+            pPort:
+               default:  Port
+            pPubliclyAccessible:
+               default:  Publicly Accessible
+            pStorageEncrypted:
+               default:  Storage Encrypted
+            pVPCSecurityGroups:
+               default:  VPC Security Groups
+            pTagsKey:
+               default:  Tags Key
+            pTagsValue:
+               default:  Tags Value
+            pDeletionPolicy:
+               default:  Deletion Policy
+
+# ----------------------------------------------------
+Parameters:
+    pAWSUser:
+        Description:  Enter the name of the AWS resource builder 
+        Type: String
+        Default: "AbdelElBadri"
+        AllowedValues: [AbdelElBadri, RobertPerrotta,AyokunleGiwa]
+        AllowedPattern: ^[a-zA-Z0-9]*$
+        #--ConstraintDescription: User should not be empty
+    pAllocatedStorage:
+        Description:  Allocated Storage (Gb) 
+        Type: Number
+        Default: 20
+    pCharacterSetName:
+        Description:  Character Set Name
+        Type: String
+        Default: WE8MSWIN1252
+        AllowedValues: [AL32UTF8,AR8ISO8859P6,AR8MSWIN1256,BLT8ISO8859P13,BLT8MSWIN1257,CL8ISO8859P5,CL8MSWIN1251,EE8ISO8859P2,EL8ISO8859P7,EE8MSWIN1250,EL8MSWIN1253,IW8ISO8859P8,IW8MSWIN1255,JA16EUC,JA16EUCTILDE,JA16SJIS,JA16SJISTILDE,KO16MSWIN949,NE8ISO8859P10,NEE8ISO8859P4,TH8TISASCII,TR8MSWIN1254,US7ASCII,UTF8,VN8MSWIN1258,WE8ISO8859P1,WE8ISO8859P15,WE8ISO8859P9,WE8MSWIN1252,ZHS16GBK,ZHT16HKSCS,ZHT16MSWIN950,ZHT32EUC]
+        AllowedPattern: ^[a-zA-Z0-9]*$
+    pDBInstanceClass:
+        Description:  DB Instance Class
+        Type: String
+        Default: db.t2.small
+        AllowedValues:     [db.t2.micro,db.t3.micro,db.t1.micro,db.t3.small,db.t2.small,db.m1.small,db.t3.medium,db.t2.medium,db.m3.medium,db.m1.medium,db.t3.large,db.t2.large,db.m5.large,db.m4.large,db.m3.large,db.m1.large,db.r4.large,db.r5.large,db.r3.large,db.t2.xlarge,db.t3.xlarge,db.m2.xlarge,db.m5.xlarge,db.m4.xlarge,db.m3.xlarge,db.m1.xlarge,db.r3.xlarge,db.r5.xlarge,db.r4.xlarge,db.t3.2xlarge,db.t2.2xlarge,db.m2.2xlarge,db.m5.2xlarge,db.m4.2xlarge,db.m3.2xlarge,db.r3.2xlarge,db.r4.2xlarge,db.r5.2xlarge,db.m2.4xlarge,db.m5.4xlarge,db.m4.4xlarge,db.r3.4xlarge,db.r4.4xlarge,db.r5.4xlarge,db.m4.10xlarge,db.r3.8xlarge,db.r4.8xlarge,db.m5.12xlarge,db.m4.16xlarge,db.r5.12xlarge,db.r4.16xlarge,db.m5.24xlarge,db.r5.24xlarge,db.x1.32xlarge,db.x1e.xlarge,db.x1e.4xlarge,db.x1e.16xlarge,db.x1e.32xlarge,db.x1e.8xlarge,db.x1e.2xlarge,db.x1.16xlarge]
+    pDBInstanceIdentifier:
+        Description:  DB Instance Identifier
+        Type: String
+        Default: TESTORCL
+    pDBName:
+        Description:  DB Instance Name (8 characters max.)
+        Type: String
+        Default: TESTORCL
+    pDBParameterGroupName:
+        Description:  DB Parameter Group Name
+        Type: String
+        Default: default-oracle-ee-12-2
+    pDBSubnetGroupName:
+        Description:  DB Subnet Group Name
+        Type: String
+        Default: awseb-e-e2kbky3m3a-stack-awsebrdsdbsubnetgroup-locpbv2n6rbb
+    pDeletionProtection:
+        Description:  Deletion Protection
+        Type: String
+        Default: False
+        AllowedValues: [False,True]
+        AllowedPattern: ^[a-zA-Z0-9]*$
+    pEnableCloudwatchLogsExports:
+        Description:  Enable Cloudwatch Logs Exports (Audit, Listener, Trace, Alert)
+        Type: CommaDelimitedList
+        Default: trace
+    pEnablePerformanceInsights:
+        Description:  Enable Performance Insights
+        Type: String
+        Default: True
+        AllowedValues: [False,True]
+        AllowedPattern: ^[a-zA-Z0-9]*$
+    pEngine:
+        Description:  DB Engine
+        Type: String
+        Default: oracle-se
+        AllowedValues: [oracle-ee,oracle-se2,oracle-se1,oracle-se]    
+    pEngineVersion:
+        Description:  DB Engine Version
+        Type: String
+        Default: 12.2.0.1.ru-2018-10.rur-2018-10.r1
+    pIops:
+        Description:  IOPS
+        Type: Number
+        Default: 1000
+    pKmsKeyId:
+        Description:  Kms Key Id
+        Type: String
+        Default: arn:aws:kms:us-east-1:173082462933:key/27fe5903-11b9-4fda-8113-f3cbe2b7e667
+    pLicenseModel: 
+        Description:  License Model
+        Type: String
+        Default: bring-your-own-license
+    pMasterUsername:
+        Description:  Master User Name
+        Type: String
+        Default: DASADM
+    pMasterUserPassword:  
+        Description:  Master User Password (8 characters min.)
+        Type: String
+        Default: DASADM22
+    pMonitoringInterval:
+        Description:  Monitoring Interval
+        Type: Number
+        Default: 60
+    pMonitoringRoleArn:
+        Description:  Monitoring Role Arn
+        Type: String
+        Default: arn:aws:iam::173082462933:role/rds-monitoring-role
+    pMultiAZ:
+        Description:  Multi AZ
+        Type: String
+        Default: False
+        AllowedValues: [False,True]
+        AllowedPattern: ^[a-zA-Z0-9]*$
+    pOptionGroupName:
+        Description:  Option Group Name
+        Type: String
+        Default: das-migration-oracleee-optiongroup-dasoracleee122withs3andssl-1nta38w8ue21b
+    pPerformanceInsightsKMSKeyId:
+        Description:  Performance Insights KMS Key Id
+        Type: String
+        Default: arn:aws:kms:us-east-1:173082462933:key/27fe5903-11b9-4fda-8113-f3cbe2b7e667
+    pPerformanceInsightsRetentionPeriod:
+        Description:  Performance Insights Retention Period
+        Type: Number
+        Default: 7
+    pPort:
+        Description:  Port
+        Type: Number
+        Default: 1521
+    pPubliclyAccessible:
+        Description:  Publicly Accessible
+        Type: String
+        Default: False
+        AllowedValues: [False,True]
+        AllowedPattern: ^[a-zA-Z0-9]*$
+    pStorageEncrypted:
+        Description:  Storage Encrypted
+        Type: String
+        Default: True
+        AllowedValues: [False,True]
+        AllowedPattern: ^[a-zA-Z0-9]*$
+    pVPCSecurityGroups:
+        Description:  VPC Security Groups
+        Type: String
+        Default: sg-d42adaa1
+    pTagsKey:
+        Description:  Tags Key
+        Type: String
+        Default: wokload-type
+    pTagsValue:
+        Description:  Tags Value
+        Type: String
+        Default: das-migration
+    pDeletionPolicy:
+        Description:  Deletion Policy
+        Type: String
+        Default: Snapshot
+        AllowedValues: [Snapshot,Retain,Delete]
+        AllowedPattern: ^[a-zA-Z0-9]*$
+#----------
+Resources:
+  DASMigrationRDSInstance:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      AllocatedStorage: !Ref pAllocatedStorage
+      CharacterSetName: !Ref pCharacterSetName
+      DBInstanceClass: !Ref pDBInstanceClass
+      DBInstanceIdentifier: !Ref pDBInstanceIdentifier
+      DBName: !Ref pDBName
+      DBParameterGroupName: !Ref pDBParameterGroupName
+      DBSubnetGroupName: !Ref pDBSubnetGroupName
+      DeletionProtection: !Ref pDeletionProtection
+      EnableCloudwatchLogsExports: !Ref pEnableCloudwatchLogsExports  
+      EnablePerformanceInsights: !Ref pEnablePerformanceInsights
+      Engine: !Ref pEngine
+      EngineVersion: !Ref pEngineVersion
+      Iops: !Ref pIops
+      KmsKeyId: !Ref pKmsKeyId
+      LicenseModel: !Ref pLicenseModel
+      MasterUsername: !Ref pMasterUsername
+      MasterUserPassword: !Ref pMasterUserPassword
+      MonitoringInterval: !Ref pMonitoringInterval
+      MonitoringRoleArn: !Ref pMonitoringRoleArn
+      MultiAZ: !Ref pMultiAZ
+      OptionGroupName: !Ref pOptionGroupName
+      PerformanceInsightsKMSKeyId: !Ref pPerformanceInsightsKMSKeyId
+      PerformanceInsightsRetentionPeriod: !Ref pPerformanceInsightsRetentionPeriod
+      Port: !Ref pPort
+      PubliclyAccessible: !Ref pPubliclyAccessible
+      StorageEncrypted: !Ref pStorageEncrypted
+      VPCSecurityGroups:
+        - !Ref pVPCSecurityGroups
+      Tags: 
+        - 
+          Key: !Ref pTagsKey
+          Value: !Ref pTagsValue  
+    DeletionPolicy: Snapshot
+
+#----------
+Outputs:
+  AWSUser:
+    Description: Last AWS user who ran/created the stack
+    Value: !Ref pAWSUser
+  PostTemplateTask:
+    Description: Post-Template tasks
+    Value: Managed IAM Role (S3 integration)needs to be added manually once the RDS is created.
+  JDBCConnectionString:
+    Description: JDBC connection string for the database
+    Value: !Join 
+      - ''
+      - - 'jdbc:oracle://'
+        - !GetAtt 
+          - DASMigrationRDSInstance
+          - Endpoint.Address
+        - ':'
+        - !GetAtt 
+          - DASMigrationRDSInstance
+          - Endpoint.Port
+        - /
+        - !Ref pDBName
+       

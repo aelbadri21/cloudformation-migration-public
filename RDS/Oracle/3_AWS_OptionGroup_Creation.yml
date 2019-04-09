@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  AWS CloudFormation Template to create an Option Group for the Amazon RDS
+  Instance.
+Resources:
+  DASOracleEE122WithS3AndSSL:
+    Type: 'AWS::RDS::OptionGroup'
+    Properties:
+      EngineName: oracle-ee
+      MajorEngineVersion: '12.2'
+      Tags:
+        - Key: wokload-type
+          Value: das-migration
+      OptionGroupDescription: Option Group for RDS Instance.
+      OptionConfigurations:
+        - OptionName: SSL
+          VpcSecurityGroupMemberships:
+            - sg-009da8364cbe986f1
+          Port: '2484'
+          OptionSettings:
+            - Name: SQLNET.SSL_VERSION
+              Value: '1.2'
+        - OptionName: S3_INTEGRATION

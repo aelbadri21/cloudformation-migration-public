@@ -1,0 +1,39 @@
+Description: This template will create the s3bucket for the Oracle DBs migration.
+# ----------------------------------------------------
+# 
+# Instructions: This template will create the s3bucket for the Oracle DBs migration.
+# ----------------------------------------------------
+
+Metadata:
+    AWS::CloudFormation::Interface:
+        ParameterGroups:
+          - Label:
+                default: Parameters for S3 bucket
+            Parameters:
+              - pBucketName
+
+        ParameterLabels:
+            pBucketName:
+                default: Name of the S3 Bucket
+
+# ----------------------------------------------------
+Parameters:
+    pBucketName:
+        Description:  S3 Bucket Name
+        Type: String
+        Default: das-migration-default
+
+#----------
+Resources:
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      AccessControl: Private
+      BucketName: !Ref pBucketName
+      Tags:
+        - Key: wokload-type
+          Value: das-migration-aws
+Outputs:
+  BucketName:
+    Value: !Ref S3Bucket
+    Description: Created bucket for the Oracle DBs migration.

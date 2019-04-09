@@ -1,0 +1,35 @@
+Description: This template will create a role for the S3 integration with a RDS Instance.
+Resources:
+  DmsAccessForRdsS3:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "rds.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+  rdss3intpolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: "DmsRdsS3IntegrationPolicy"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Action:
+              - "s3:GetObject"
+              - "s3:ListBucket"
+              - "s3:PutObject"
+            Resource:
+              - arn:aws:s3:::das-db-migration
+              - arn:aws:s3:::das-db-migration/*
+      Roles:
+        -
+          Ref: "DmsAccessForRdsS3"
